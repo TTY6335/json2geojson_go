@@ -9,54 +9,54 @@ import (
 
 func main() {
 /** JSONデコード用に構造体定義 */
-type Single_flightdata struct {
-		hex                string `json:"hex"`
-		flight             string `json:"flight"`
-//		alt_baro              int `json:"alt_baro"`
-//		alt_geom              int `json:alt_geom`
-//		gs                float32 `json:gs`
-//		ias                   int `json:ias`
-//		tas                   int `json:tas`
-//		mach              float32 `json:mach`
-//		track             float32 `json:track`
-//		track_rate        float32 `json:track_rate`
-//		roll              float32 `json:roll`
-//		mag_heading       float32 `json:mag_heading`
-//		baro_rate             int `json:mag_heading`
-//		geom_rate             int `json:geom_rate`
-//		squawk                int `json:squawk`
-//		emergency          string `json:emergency`
-//		category           string `json:category`
-//		nav_qnh           float32 `json:nav_qnh`
-//		nav_altitude_mcp      int `json:nav_altitude_mcp`
-//		nav_altitude_fms      int `json:nav_altitude_fms`
-//		nav_heading       float32 `json:nav_heading`
-//		lat               float32 `json:lat`
-//		lon               float32 `json:lon`
-//		nic                   int `json:nic`
-//		rc                    int `json:rc`
-//		seen_pos          float32 `json:seen_pos`
-//		version           float32 `json:version`
-//		nic_baro              int `json:nic_baro`
-//		nac_p                 int `json:nac_p`
-//		nac_v                 int `json:nac_v`
-//		sil                   int `json:sil`
-//		sil_type           string `json:sil_type`
-//		gva	                  int `json:gva`
-//		sda	                  int `json:sda`
-//		messages              int `json:messages`
-//		seen              float32 `json:seen`
-//		rssi              float32 `json:rssi`
-}
+//}
 
 type Full_data struct {
-Timestamp float64 `json:"now"`
-Messages  uint32 `json:"messages"`
-All_flightdata []*Single_flightdata `json:"aircraft"`
+	Timestamp float64 `json:"now"`
+	Messages  uint32 `json:"messages"`
+	All_flightdata []struct {
+		Hex                string `json:"hex"`
+		Flight             string `json:"flight,omitempty"`
+		Alt_baro              int `json:"alt_baro"`
+		Alt_geom              int `json:"alt_geom,omitempty"`
+		Gs                float32 `json:"gs,omitempty"`
+		Ias                   int `json:"ias,omitempty"`
+		Tas                   int `json:"tas,omitempty"`
+		Mach              float32 `json:"mach,omitempty"`
+		Track             float32 `json:"track,omitempty"`
+		Track_rate        float32 `json:"track_rate,omitempty"`
+		Roll              float32 `json:"roll,omitempty"`
+		Mag_heading       float32 `json:"mag_heading,omitempty"`
+		Baro_rate             int `json:"mag_heading,omitempty"`
+		Geom_rate             int `json:"geom_rate,omitempty"`
+		Squawk             string `json:"squawk,omitempty"`
+		Emergency          string `json:"emergency,omitempty"`
+		Category           string `json:"category,omitempty"`
+		Nav_qnh           float32 `json:"nav_qnh,omitempty"`
+		Nav_altitude_mcp      int `json:"nav_altitude_mcp,omitempty"`
+		Nav_altitude_fms      int `json:"nav_altitude_fms,omitempty"`
+		Nav_heading       float32 `json:"nav_heading,omitempty"`
+		Lat               float32 `json:"lat,omitempty"`
+		Lon               float32 `json:"lon,omitempty"`
+		Nic                   int `json:"nic,omitempty"`
+		Rc                    int `json:"rc,omitempty"`
+		Seen_pos          float32 `json:"seen_pos,omitempty"`
+		Version           float32 `json:"version,omitempty"`
+		Nic_baro              int `json:"nic_baro,omitempty"`
+		Nac_p                 int `json:"nac_p,omitempty"`
+		Nac_v                 int `json:"nac_v,omitempty"`
+		Sil                   int `json:"sil,omitempty"`
+		Sil_type           string `json:"sil_type,omitempty"`
+		Gva	                  int `json:"gva,omitempty"`
+		Sda	                  int `json:"sda,omitempty"`
+		Messages              int `json:"messages,omitempty"`
+		Seen              float32 `json:"seen,omitempty"`
+		Rssi              float32 `json:"rssi,omitempty"`
+	}	`json:"aircraft"`
 }
 
 // JSONファイル読み込み
-bytes, err := ioutil.ReadFile("sample.json")
+bytes, err := ioutil.ReadFile("./aircraft.json")
 if err != nil {
 log.Fatal(err)
 }
