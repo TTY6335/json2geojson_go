@@ -2,10 +2,12 @@ package main
 
 import (
 "encoding/json"
+"bytes"
 "fmt"
 "os"
 "io/ioutil"
 "log"
+"net/http"
 "./src"
 )
 
@@ -23,14 +25,17 @@ func EncodingJSON(geojson format.Geojson_data) []byte {
 
 func main() {
 
+//POST先のURL
+const URL = "http://localhost:8000" 
+
 // JSONファイル読み込み
-bytes, err := ioutil.ReadFile("./aircraft.json")
+json_bytes, err := ioutil.ReadFile("./aircraft.json")
 if err != nil {
 log.Fatal(err)
 }
 // JSONデコード
 var flight_data format.Full_data
-if err := json.Unmarshal(bytes, &flight_data); err != nil {
+if err := json.Unmarshal(json_bytes, &flight_data); err != nil {
 log.Fatal(err)
 }
 
@@ -92,4 +97,13 @@ for _, single_flight := range flight_data.All_flightdata {
 
 	content := []byte(bdata)
 	ioutil.WriteFile("aircraft.geojson", content, os.ModePerm)
+
+//POST
+	res, err := http.Post(URL, "application/json",bytes.NewBuffer(bdata))
+	defer res.Body.Close()
+	if err != nil {
+		fmt.Println("[!] " + err.Error())
+	} else {
+		fmt.Println("[*] " + res.Status)
+	}
 }
