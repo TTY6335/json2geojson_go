@@ -26,10 +26,10 @@ func EncodingJSON(geojson format.Geojson_data) []byte {
 func main() {
 
 //POST先のURL
-const URL = "http://localhost:8000" 
+const URL = url.post_target
 
 // JSONファイル読み込み
-json_bytes, err := ioutil.ReadFile("./aircraft.json")
+json_bytes, err := ioutil.ReadFile("/var/run/dump1090-fa/aircraft.json")
 if err != nil {
 log.Fatal(err)
 }
@@ -48,6 +48,9 @@ for _, single_flight := range flight_data.All_flightdata {
 	single_geojson_flight_data.Geometry.Coordinates[0]=single_flight.Lon
 	single_geojson_flight_data.Geometry.Coordinates[1]=single_flight.Lat
 	single_geojson_flight_data.Geometry.Type="Point"
+
+	//Type
+	single_geojson_flight_data.Type="Feature"
 	//Properties
 	single_geojson_flight_data.Properties.Timestamp        =flight_data.Timestamp
 	single_geojson_flight_data.Properties.Hex              =single_flight.Hex
@@ -95,8 +98,8 @@ for _, single_flight := range flight_data.All_flightdata {
 	bdata := EncodingJSON(All_geojson_flight_data)
 	os.Stdout.Write(bdata)
 
-	content := []byte(bdata)
-	ioutil.WriteFile("aircraft.geojson", content, os.ModePerm)
+//	content := []byte(bdata)
+//	ioutil.WriteFile("aircraft.geojson", content, os.ModePerm)
 
 //POST
 	res, err := http.Post(URL, "application/json",bytes.NewBuffer(bdata))

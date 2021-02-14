@@ -51,6 +51,7 @@ type Geojson_Geometry struct {
 }
 
 type Geojson_Features struct{
+	Type         string            `json:"type"`
 	Geometry     Geojson_Geometry  `json:"geometry"`
 	Properties   Geojson_Properties`json:"properties"`
 }
@@ -96,6 +97,6 @@ Rssi              float32 `json:"rssi,omitempty"`
 
 type Geojson_data struct {
 	Type string `json:"type"`
-	Features []Geojson_Features
+	Features []Geojson_Features`json:"features"`
 }
 
