@@ -9,6 +9,7 @@ import (
 "log"
 "net/http"
 "./src"
+"./setting"
 )
 
 //このへん参照
@@ -26,10 +27,11 @@ func EncodingJSON(geojson format.Geojson_data) []byte {
 func main() {
 
 //POST先のURL
-const URL = url.post_target
+const URL = url.Post_target
 
 // JSONファイル読み込み
-json_bytes, err := ioutil.ReadFile("/var/run/dump1090-fa/aircraft.json")
+//json_bytes, err := ioutil.ReadFile("/var/run/dump1090-fa/aircraft.json")
+json_bytes, err := ioutil.ReadFile("./sample.json")
 if err != nil {
 log.Fatal(err)
 }
