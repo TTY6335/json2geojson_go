@@ -1,5 +1,5 @@
 .gitignore
 *.json
 *.geojson
-setting/url.go
+./setting/url.go
 json2geojson
