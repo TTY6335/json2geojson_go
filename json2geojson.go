@@ -7,9 +7,13 @@ import (
 "os"
 "io/ioutil"
 "log"
+"net"
 "net/http"
+"time"
+"strconv"
 "./src"
 "./setting"
+
 )
 
 //このへん参照
@@ -24,14 +28,21 @@ func EncodingJSON(geojson format.Geojson_data) []byte {
 	return bdata
 }
 
+var timeout = time.Duration(500 * time.Millisecond)
+
+func dialTimeout(network, addr string) (net.Conn, error) {
+	return net.DialTimeout(network, addr, timeout)
+}
+
 func main() {
 
 //POST先のURL
 const URL = url.Post_target
 
 // JSONファイル読み込み
-//json_bytes, err := ioutil.ReadFile("/var/run/dump1090-fa/aircraft.json")
-json_bytes, err := ioutil.ReadFile("./sample.json")
+json_bytes, err := ioutil.ReadFile("/var/run/dump1090-fa/aircraft.json")
+//json_bytes, err := ioutil.ReadFile("./sample.json")
+
 if err != nil {
 log.Fatal(err)
 }
@@ -98,15 +109,16 @@ for _, single_flight := range flight_data.All_flightdata {
 //	fmt.Println(All_geojson_flight_data)
 
 	bdata := EncodingJSON(All_geojson_flight_data)
-	os.Stdout.Write(bdata)
-
-//	content := []byte(bdata)
-//	ioutil.WriteFile("aircraft.geojson", content, os.ModePerm)
 
 //POST
 	res, err := http.Post(URL, "application/json",bytes.NewBuffer(bdata))
 	defer res.Body.Close()
 	if err != nil {
+	//IF TIMEOUT save geojson
+		nowUTC := time.Now().UTC()
+		millisecond:=nowUTC.UnixNano() / int64(time.Millisecond)
+		geojson_name:="/home/gunma/workplace/adsb/"+strconv.FormatInt(millisecond, 10)+".geojson"
+		ioutil.WriteFile(geojson_name,[]byte(bdata), os.ModePerm)
 		fmt.Println("[!] " + err.Error())
 	} else {
 		fmt.Println("[*] " + res.Status)
