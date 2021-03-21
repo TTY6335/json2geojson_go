@@ -1,6 +1,7 @@
 #!/bin/bash
-while true
-do
-./home/gunma/workplace/json2geojson_go/json2geojson
-sleep 1
-done
+/media/sf_Data/ADSB/json2geojson_go/json2geojson
+
+#while true
+#do
+#sleep 1
+#done
