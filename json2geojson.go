@@ -91,48 +91,54 @@ func convert_json_format(flight_data format.Full_data) format.Geojson_data {
 	return All_geojson_flight_data
 }
 
-func do_all() {
-	//POST先のURL
-	const URL = "http://localhost:8080"
-	// JSONファイル読み込み
-	json_bytes, err := ioutil.ReadFile("/var/run/dump1090-fa/aircraft.json")
-	//json_bytes, err := ioutil.ReadFile("./sample.json")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	// JSONデコード
-	var flight_data format.Full_data
-	if err := json.Unmarshal(json_bytes, &flight_data); err != nil {
-		log.Fatal(err)
-	}
-
-	//GeoJSONに変換
-	var All_geojson_flight_data format.Geojson_data
-	All_geojson_flight_data = convert_json_format(flight_data)
-	//	fmt.Println(All_geojson_flight_data)
-
-	bdata := EncodingJSON(All_geojson_flight_data)
-	//POST
-	res, err := http.Post(URL, "application/json", bytes.NewBuffer(bdata))
-	defer res.Body.Close()
-
-	fmt.Println(time.Now().UTC())
-	if err != nil {
-		//IF TIMEOUT save geojson
-		nowUTC := time.Now().UTC()
-		millisecond := nowUTC.UnixNano() / int64(time.Millisecond)
-		geojson_name := "/home/gunma/workplace/adsb/" + strconv.FormatInt(millisecond, 10) + ".geojson"
-		ioutil.WriteFile(geojson_name, []byte(bdata), os.ModePerm)
-		fmt.Println("[!] " + err.Error())
-	} else {
-		fmt.Println("[*] " + res.Status)
-	}
-}
-
 func main() {
+        http.DefaultTransport.(*http.Transport).MaxIdleConns = 0
+        http.DefaultTransport.(*http.Transport).MaxIdleConnsPerHost = 3000
+        http.DefaultTransport.(*http.Transport).DisableKeepAlives = true
+//      for range time.Tick(1 * time.Second) {
+        for range time.Tick(1000 * time.Millisecond) {
+//              go do_all()
+                go func(){
+                        //POST先のURL
+                        const URL = url.Post_target
+                        //const URL = "http://localhost:8000"
+                        // JSONファイル読み込み
+                        json_bytes, err := ioutil.ReadFile("/var/run/dump1090-fa/aircraft.json")
+                        //json_bytes, err := ioutil.ReadFile("./sample.json")
 
-	for range time.Tick(1 * time.Second) {
-		go do_all()
-	}
+                        if err != nil {
+                                log.Fatal(err)
+                        }
+                        // JSONデコード
+                        var flight_data format.Full_data
+                        if err := json.Unmarshal(json_bytes, &flight_data); err != nil {
+                                log.Fatal(err)
+                        }
+
+                        //GeoJSONに変換
+                        var All_geojson_flight_data format.Geojson_data
+                        All_geojson_flight_data = convert_json_format(flight_data)
+                        //      fmt.Println(All_geojson_flight_data)
+
+                        bdata := EncodingJSON(All_geojson_flight_data)
+                        //POST
+                        res, err := http.Post(URL, "application/json", bytes.NewBuffer(bdata))
+                        if res != nil {
+                                //  ここで nilでなければ閉じる
+                                defer res.Body.Close()
+                        }
+
+                        if err != nil {
+                                //IF TIMEOUT save geojson
+                                nowUTC := time.Now().UTC()
+                                millisecond := nowUTC.UnixNano() / int64(time.Millisecond)
+                                geojson_name := "/home/gunma/workplace/adsb/" + strconv.FormatInt(millisecond, 10) + ".geojson"
+                                ioutil.WriteFile(geojson_name, []byte(bdata), os.ModePerm)
+                                fmt.Println("[!] " + err.Error())
+                        } else {
+                                fmt.Println("[*] " + res.Status)
+                        }
+
+                }()
+        }
 }
